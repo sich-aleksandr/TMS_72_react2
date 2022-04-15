@@ -16,9 +16,9 @@ export const Form = ({
   return (
     
     <div>
-        <LoginContext.Consumer>
+        {/* <LoginContext.Consumer>
             <span>{this.user}</span>
-        </LoginContext.Consumer>
+        </LoginContext.Consumer> */}
       <form>
         <input type="" placeholder="Login" id="login" onChange={onHandleForm} />
         {login.length < 4 && isformReady && (
