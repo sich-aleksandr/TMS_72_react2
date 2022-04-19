@@ -1,40 +1,26 @@
 import React from "react";
 import _debounce from "lodash/debounce";
-import './weather.modules.css';
-import { Spinner } from './spinner/spinner.jsx'
-import { LOAD_STATUSES } from "./constants.jsx";
-import { getCurrentWeather } from "../api/apiWether.jsx";
+import { connect } from "react-redux";
+import { WeatherSelectors, WeatherAC } from "../../store";
+import "./weather.modules.css";
+import { Spinner } from "./spinner/spinner.jsx";
 
-export default class Weather extends React.Component {
+class WeatherMain extends React.Component {
   state = {
-    city: " ",
-    data: {},
-    loadStatus: LOAD_STATUSES.UNKNOWN,
+    city: "Minsk",
   };
 
   onChangeCity = ({ target }) => {
     this.setState({ city: `${target.value}` });
   };
 
-  fetchWeather = (city) => {
-    this.setState({ loadStatus: LOAD_STATUSES.LOADING });
-
-    if (city !== "") {
-      getCurrentWeather(city)
-        .then((data) => {
-          this.setState({ loadStatus: LOAD_STATUSES.LOADED, data });
-        })
-        .catch(() => {
-          this.setState({ loadStatus: LOAD_STATUSES.ERROR, data: {} });
-        });
-    } else {
-      this.setState({ loadStatus: LOAD_STATUSES.UNKNOWN, data: {} });
-    }
-  };
-
   fetchWeatherDebounced = _debounce(() => {
-    this.fetchWeather(this.state.city);
+    this.props.getWeather(this.state.city);
   }, 1000);
+
+  componentDidMount() {
+    this.fetchWeatherDebounced();
+  }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.city !== this.state.city) {
@@ -43,39 +29,39 @@ export default class Weather extends React.Component {
   }
 
   render() {
+    const { data, isLoading, isLoaded, isError } = this.props;
+
     return (
       <div className="weather">
         <input
           type=""
+          value={this.state.city}
           placeholder="Введите город"
           onChange={this.onChangeCity}
         />
-        <p>{this.state.loadStatus}</p>
-        {this.state.loadStatus === LOAD_STATUSES.UNKNOWN && (
-          <p>Введите город</p>
-        )}
-        {this.state.loadStatus === LOAD_STATUSES.ERROR && (
+        <p>{this.props.loadStatus}</p>
+        {isError && (
           <p>Не удалось получить данные, попробуйте изменить запрос</p>
         )}
-        {this.state.loadStatus === LOAD_STATUSES.LOADING && <Spinner />}
-        {this.state.loadStatus === LOAD_STATUSES.LOADED && (
+        {isLoading && <Spinner />}
+        {isLoaded && (
           <table className="newstyle">
             <tbody>
               <tr>
                 <th>Город</th>
-                <th>{this.state.data.name}</th>
+                <th>{data.name}</th>
               </tr>
               <tr>
                 <td>Температура</td>
-                <td>{this.state.data.main.temp}</td>
+                <td>{data.main.temp}</td>
               </tr>
               <tr>
                 <td>Ощущаеться</td>
-                <td>{this.state.data.main.feels_like}</td>
+                <td>{data.main.feels_like}</td>
               </tr>
               <tr>
                 <td>Давление</td>
-                <td>{this.state.data.main.pressure}</td>
+                <td>{data.main.pressure}</td>
               </tr>
             </tbody>
           </table>
@@ -84,3 +70,23 @@ export default class Weather extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    data: WeatherSelectors.getWeather(state),
+    isLoading: WeatherSelectors.isLoading(state),
+    isLoaded: WeatherSelectors.isLoaded(state),
+    isError: WeatherSelectors.isError(state),
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getWeather: (city) => dispatch(WeatherAC.fetchWeather(city)),
+  };
+};
+
+export const Weather = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WeatherMain);
