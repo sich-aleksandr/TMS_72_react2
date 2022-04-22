@@ -1,0 +1,54 @@
+#modal-root {
+    position: relative;
+    z-index: 999;
+}
+
+.app {
+    height: 10em;
+    width: 10em;
+    background: lightblue;
+    overflow: hidden;
+}
+
+.modal-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal {
+    width: 250px;
+    height: 250px;
+    border-radius: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background: #fff;
+
+    box-shadow: 0px 0px 32px rgb(28 41 61 / 5%), 0px 32px 32px rgb(28 41 61 / 6%);
+}
+
+.title {
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.text {
+    padding: 20px;
+
+}
+
+
+.btn-close {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
