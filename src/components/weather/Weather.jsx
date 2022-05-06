@@ -7,15 +7,20 @@ import { Spinner } from "./spinner/spinner.jsx";
 
 class WeatherMain extends React.Component {
   state = {
-    city: "Minsk",
+    city: "people",
+    id: '1',
   };
 
   onChangeCity = ({ target }) => {
     this.setState({ city: `${target.value}` });
   };
+  onChangeId = ({ target }) => {
+    this.setState({ id: `${target.value}` });
+  };
 
   fetchWeatherDebounced = _debounce(() => {
-    this.props.getWeather(this.state.city);
+    console.log(this.state.id);
+    this.props.getWeather(this.state.city, this.state.id);
   }, 1000);
 
   componentDidMount() {
@@ -23,13 +28,15 @@ class WeatherMain extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.city !== this.state.city) {
+    if (prevState.id !== this.state.id) {
       this.fetchWeatherDebounced();
     }
   }
 
   render() {
     const { data, isLoading, isLoaded, isError } = this.props;
+
+    console.log(data);
 
     return (
       <div className="weather">
@@ -38,6 +45,12 @@ class WeatherMain extends React.Component {
           value={this.state.city}
           placeholder="Введите город"
           onChange={this.onChangeCity}
+        />
+        <input
+          type=""
+          value={this.state.id}
+          placeholder="Введите город"
+          onChange={this.onChangeId}
         />
         <p>{this.props.loadStatus}</p>
         {isError && (
@@ -48,20 +61,20 @@ class WeatherMain extends React.Component {
           <table className="newstyle">
             <tbody>
               <tr>
-                <th>Город</th>
+                <th>name</th>
                 <th>{data.name}</th>
               </tr>
               <tr>
-                <td>Температура</td>
-                <td>{data.main.temp}</td>
+                <td>height</td>
+                <td>{data.height}</td>
               </tr>
               <tr>
-                <td>Ощущаеться</td>
-                <td>{data.main.feels_like}</td>
+                <td>mass</td>
+                <td>{data.mass}</td>
               </tr>
               <tr>
-                <td>Давление</td>
-                <td>{data.main.pressure}</td>
+                <td>hair_color</td>
+                <td>{data.hair_color}</td>
               </tr>
             </tbody>
           </table>
@@ -82,7 +95,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getWeather: (city) => dispatch(WeatherAC.fetchWeather(city)),
+    getWeather: (city, id) => dispatch(WeatherAC.fetchWeather(city, id)),
   };
 };
 

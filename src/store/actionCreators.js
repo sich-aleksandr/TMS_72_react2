@@ -1,4 +1,4 @@
-import { getCurrentWeather } from "../components/api/apiWether";
+import { getCurrentPoint } from "../components/api/apiStar";
 import { WeatherActions } from "./constants";
 
 export const fetchStart = () => ({
@@ -14,11 +14,11 @@ export const fetchSuccess = (weather) => ({
   type: WeatherActions.fetchSuccess,
 });
 
-export const fetchWeather = (city) => {
+export const fetchWeather = (point, id) => {
   return async (dispatch) => {
     try {
       dispatch(fetchStart());
-      const weather = await getCurrentWeather(city);
+      const weather = await getCurrentPoint(point, id);
       dispatch(fetchSuccess(weather));
     } catch {
       dispatch(fetchError());
